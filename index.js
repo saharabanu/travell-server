@@ -59,7 +59,8 @@ async function run(){
         
         
     })
-
+    // manage all oreder api  
+    
     // get my order 
    app.get('/myOrder/:email',async(req,res)=>{
        const email = req.params.email;
