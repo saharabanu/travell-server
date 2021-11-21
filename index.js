@@ -21,7 +21,7 @@ async function run(){
         
     const database = client.db("tourism_services");
     const servicesCollection = database.collection("services");
-    const ordersCollection = database.collection("my_orders");
+    const ordersCollection = database.collection("all_orders");
     
     // get api 
     app.get('/services',async(req,res)=>{
@@ -33,7 +33,6 @@ async function run(){
     //  get single service api 
     app.get('/services/:id',async(req,res)=>{
         const id = req.params.id;
-        console.log('single service data ',id);
         const query = { _id:ObjectId(id) };
         const service = await servicesCollection.findOne(query);
         res.json(service);
@@ -43,35 +42,34 @@ async function run(){
     // post api 
     app.post('/services',async(req,res)=>{
         const service = req.body;
-        console.log('hit the post api',service)
-       
         const result =await servicesCollection.insertOne(service);
-        // console.log(result)
         res.json(result)
     })
-    // add orders api 
-    app.post('/addOrder',async(req,res)=>{
-        const order = req.body;
-        
-        const result = await ordersCollection.insertOne(order)
-       
-        res.send(result)
-        
-        
-    })
+    
     // manage all oreder api  
+
+    app.post('/orders', async (req, res) => {
+        const order = req.body;
+        const result = await ordersCollection.insertOne(order);
+        res.send(result);
+
+    })
+    //Get Orders API
+    app.get('/orders', async (req, res) => {
+        const cursor = ordersCollection.find({});
+        const orders = await cursor.toArray();
+        res.send(orders);
+    })
     
     // get my order 
    app.get('/myOrder/:email',async(req,res)=>{
        const email = req.params.email;
-       
        const result = await ordersCollection.find({email}).toArray();
       res.send(result)
    })
 //    delete api 
-    app.delete('/myOrder/:id',async(req,res)=>{
+    app.delete('/deleteOrder/:id',async(req,res)=>{
         const id = req.params.id;
-        console.log('hittinf',id)
         const query = { _id:ObjectId(id) };
         const result = await ordersCollection.deleteOne(query);
         res.json(result)
